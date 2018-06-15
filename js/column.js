@@ -1,31 +1,62 @@
-    // tworzenie klasy kolumny
-function Column(name) {
+var prefix = "https://cors-anywhere.herokuapp.com/";
+function Column(id, name) {
   var self = this; // kontekst
 
-  this.id = randomString(); // generowanie id
-  this.name = name; // nazwa
+  this.id = id;
+  this.name = name || 'no name given';
   this.element = generateTemplate('column-template', {
     name: this.name,
     id: this.id
-  }); // do element generujemy element nazwa: column-template, dane do mustache
+  });
 
-  // dodaj funkcjonalość do klasy Column by każda stworzona instancja na kliknięcie elementu z klasą 'btn-delete' odpalała usówanie kolumny, a kliknięcie elementu z klasą addCard tworzyło nową instancję Card której nazwę pobierze z prompta.
+
   this.element.querySelector('.column').addEventListener('click', function (event) {
     if (event.target.classList.contains('btn-delete')) {
       self.removeColumn();
     }
     if (event.target.classList.contains('add-card')) {
-      self.addCard(new Card(prompt("Enter the name of card")));
+
+      var cardName = prompt('Enter the name of the card');
+
+      event.preventDefault();
+      var data = new FormData();
+      data.append('name', cardName);
+      data.append('bootcamp_kanban_column_id', self.id);
+
+      fetch(baseUrl + '/card', {
+          method: 'POST',
+          headers: myHeaders,
+          body: data
+        })
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function () {
+          var card = new Card(resp.id, cardName);
+          self.addCard(card);
+        });
+
+      self.addCard(new Card(cardName));
     }
   });
 }
 
-    //prototypy addCard i removeColumn
+
 Column.prototype = {
   addCard: function (card) {
-    this.element.querySelector('ul').appendChild(card.element); // wybierz ul z this.element(naszej kolumny) i dodaj kartę by się wyświetlała na stronie. card.element bo element będzie naszym wygenerowanym szablonem
+    this.element.querySelector('ul').appendChild(card.element);
   },
   removeColumn: function () {
-    this.element.parentNode.removeChild(this.element); // przejdź do rodzica i usuń dziecko, które wywołało metodę
+    var self = this;
+    fetch(baseUrl + '/column/' + self.id, {
+        method: 'DELETE',
+        headers: myHeaders
+      })
+      .then(function(resp) {
+        return resp.json();
+      })
+      .then(function(resp) {
+        self.element.parentNode.removeChild(self.element);
+      })
   }
 }
