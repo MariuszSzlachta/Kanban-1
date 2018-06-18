@@ -42,16 +42,13 @@ function Column(id, name) {
         .then(function (resp) {
           return resp.json();
         })
-        .then(function () {
+        .then(function (resp) {
           var card = new Card(resp.id, cardName);
           self.addCard(card);
         });
-
-      self.addCard(new Card(cardName));
     }
   });
 }
-
 
 Column.prototype = {
   addCard: function (card) {
