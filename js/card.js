@@ -38,17 +38,22 @@ Card.prototype = {
   rename: function() {
     var self = this;
     var newName = prompt('Enter new name');
-    var data = new FormData()
-    data.append('name', name);
-    data.append('bootcamp_kanban_column_id', self.id);
+    var columnId = self.element.parentNode.getAttribute('id');
 
-    fetch(baseUrl + '/card/' + self.id, {method: 'PUT', headers: myHeaders, data})
+    var data = new FormData();
+    data.append('id', self.id);
+    data.append('name', newName);   
+    data.append('bootcamp_kanban_column_id', columnId); 
+
+    fetch(baseUrl + '/card/' + self.id,  {method: 'PUT', headers: myHeaders, body: data })
       .then(function(resp){
         return resp.json();
       })
       .then(function(resp){
         self.name = newName;
-        console.log(self.name);
+      })
+      .catch(function(error){
+        console.log(error);
       })
   }
 }

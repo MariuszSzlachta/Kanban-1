@@ -2,7 +2,6 @@ var board = {
   name: "Kanban Board", // nazwa
   addColumn: function (column) {
     this.element.appendChild(column.element); // dodaje możliwosc tworzenia kolumn // usówanie bezpośrednio z danej kolumny dlatego w column
-      console.log (column.id)
       initSortable(column.id);
   },
   element: document.querySelector('#board .column-container')
