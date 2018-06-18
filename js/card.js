@@ -15,6 +15,11 @@ function Card(id, name) {
       self.removeCard();
     }
   });
+
+  this.element.querySelector('.card').addEventListener('dblclick', function (event) {
+    event.stopPropagation();
+    self.rename();
+  });
 }
 
 Card.prototype = {
@@ -28,5 +33,23 @@ Card.prototype = {
       .then(function(resp) {
         self.element.parentNode.removeChild(self.element);
       })
-    }
+    },
+  
+  rename: function() {
+    var self = this;
+    var newName = prompt('Enter new name');
+    var data = new FormData()
+    data.append('name', name);
+    data.append('bootcamp_kanban_column_id', self.id);
+
+    fetch(baseUrl + '/card/' + self.id, {method: 'PUT', headers: myHeaders, data})
+      .then(function(resp){
+        return resp.json();
+      })
+      .then(function(resp){
+        self.name = newName;
+        console.log(self.name);
+      })
+  }
 }
+
