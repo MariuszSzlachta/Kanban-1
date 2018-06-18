@@ -28,9 +28,15 @@ document.querySelector('#board .create-column').addEventListener('click', functi
 });
 
 function initSortable(id) {
+  var self = this;
   var el = document.getElementById(id);
   var sortable = Sortable.create(el, {
     group: 'kanban',
-    sort: true
+    sort: true,
+
+    receive: function( event, ui ) {
+      console.log(item);
+    }
+    
   });
 }

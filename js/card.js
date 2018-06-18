@@ -5,7 +5,8 @@ function Card(id, name) {
   this.id = id;
   this.name = name || 'No name given';
   this.element = generateTemplate('card-template', {
-    description: this.name
+    description: this.name,
+    id: this.id
   }, 'li') // nazwa: card-template, do description wpisz podany w funkcji parametr description, li jako element ul którą jest nasza kolumna
 
   this.element.querySelector('.card').addEventListener('click', function (event) {
@@ -13,6 +14,7 @@ function Card(id, name) {
 
     if (event.target.classList.contains('btn-delete')) {
       self.removeCard();
+
     }
   });
 
@@ -20,6 +22,7 @@ function Card(id, name) {
     event.stopPropagation();
     self.rename();
   });
+
 }
 
 Card.prototype = {
@@ -41,11 +44,11 @@ Card.prototype = {
     var columnId = self.element.parentNode.getAttribute('id');
 
     var data = new FormData();
-    data.append('id', self.id);
+    // data.append('id', self.id);
     data.append('name', newName);   
     data.append('bootcamp_kanban_column_id', columnId); 
 
-    fetch(baseUrl + '/card/' + self.id,  {method: 'PUT', headers: myHeaders, body: data })
+    fetch(baseUrl + '/card/' + self.id, {method: 'PUT', headers: myHeaders, body: data })
       .then(function(resp){
         return resp.json();
       })
