@@ -20,7 +20,7 @@ function Card(id, name) {
 
   this.element.querySelector('.card').addEventListener('dblclick', function (event) {
     event.stopPropagation();
-    self.rename();
+    self.update();
   });
 
 }
@@ -29,35 +29,46 @@ Card.prototype = {
   removeCard: function () {
     var self = this;
 
-    fetch(baseUrl + '/card/' + self.id, { method: 'DELETE', headers: myHeaders })
-      .then(function(resp) {
+    fetch(baseUrl + '/card/' + self.id, {
+        method: 'DELETE',
+        headers: myHeaders
+      })
+      .then(function (resp) {
         return resp.json();
       })
-      .then(function(resp) {
+      .then(function (resp) {
         self.element.parentNode.removeChild(self.element);
       })
-    },
-  
-  rename: function() {
+  },
+
+  update: function (targetList) {
     var self = this;
-    var newName = prompt('Enter new name');
-    var columnId = self.element.parentNode.getAttribute('id');
 
+    if (event.type == 'dblclick') {
+      var newName = prompt('Enter new name');
+    }
+
+    var columnId = event.target.id;
     var data = new FormData();
-    // data.append('id', self.id);
-    data.append('name', newName);   
-    data.append('bootcamp_kanban_column_id', columnId); 
 
-    fetch(baseUrl + '/card/' + self.id, {method: 'PUT', headers: myHeaders, body: data })
-      .then(function(resp){
+    data.append('name', newName || this.name);
+    data.append('bootcamp_kanban_column_id', columnId);
+
+
+    fetch(baseUrl + '/card/' + self.id, {
+        method: 'PUT',
+        headers: myHeaders,
+        body: data
+      })
+      .then(function (resp) {
         return resp.json();
       })
-      .then(function(resp){
+      .then(function (resp) {
+
         self.name = newName;
       })
-      .catch(function(error){
+      .catch(function (error) {
         console.log(error);
       })
   }
 }
-
