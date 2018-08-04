@@ -48,16 +48,23 @@ Card.prototype = {
       var newName = prompt('Enter new name');
     }
 
-    var columnId = event.target.id;
+    var columnId = targetList;
     var data = new FormData();
 
     data.append('name', newName || this.name);
     data.append('bootcamp_kanban_column_id', columnId);
+    var contentType = {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+
+    newHeaders = Object.assign({}, myHeaders);
+    newHeaders['Content-Type'] = 'application/json; charset=utf8';
+
 
 
     fetch(baseUrl + '/card/' + self.id, {
         method: 'PUT',
-        headers: myHeaders,
+        headers: newHeaders,
         body: data
       })
       .then(function (resp) {
@@ -65,7 +72,7 @@ Card.prototype = {
       })
       .then(function (resp) {
 
-        self.name = newName;
+        self.element.querySelector('.card-description').innerTEXT = newName;
       })
       .catch(function (error) {
         console.log(error);

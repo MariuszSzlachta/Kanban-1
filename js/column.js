@@ -33,6 +33,7 @@ function Column(id, name) {
     // na endpoint card metoda post bo coś dodajemy
     // otrzymujemy id karty wygenerowane przez serwer tam na serwerze się zapisuje to id i na ten podstawie z odpowiedzi resp możemy utworzyc nowa instancje karty i dodac do widoku metoda addCard
 
+
       fetch(baseUrl + '/card', {
           method: 'POST',
           headers: myHeaders,

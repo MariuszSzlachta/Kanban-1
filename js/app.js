@@ -3,6 +3,7 @@ var myHeaders = {
   'X-Client-Id': '3200',
   'X-Auth-Token': '401aef98001c4577553781e7f137e8a3'
 };
+
 // połącz się z api na endpoint board, sparsuj odpowiedź
 // uruchom metode setup columns a informacje jakie kolumny maja byc wygenerowane pobierz resp.columns - 
 fetch(baseUrl + '/board', {
