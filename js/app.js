@@ -1,12 +1,41 @@
-function randomString() {
-  var chars = '0123456789abcdefghiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXTZ';
-  var str = '';
-  for (var i = 0; i < 10; i++) {
-    str += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return str;
+var baseUrl = 'https://kodilla.com/pl/bootcamp-api';
+var myHeaders = {
+  'X-Client-Id': '3200',
+  'X-Auth-Token': '401aef98001c4577553781e7f137e8a3'
+};
+
+// połącz się z api na endpoint board, sparsuj odpowiedź
+// uruchom metode setup columns a informacje jakie kolumny maja byc wygenerowane pobierz resp.columns - 
+fetch(baseUrl + '/board', {
+    headers: myHeaders
+  })
+  .then(function (resp) {
+    return resp.json();
+  })
+  .then(function (resp) {
+    setupColumns(resp.columns);
+  });
+// 1. Przejdź do tablicy resp.columns iteruj po niej dla każdego elementu tablicy utwórz nowy obiekt z klasy Column. W którym przypisz otrzymane z serwera id oraz name
+// 2. Dla każdego elementu z tablicy columns użyj metody setupCards by stworzyć karty które są w danych kolumnach
+function setupColumns(columns) {
+  columns.forEach(function (column) {
+    var col = new Column(column.id, column.name);
+    board.addColumn(col);
+    setupCards(col, column.cards);
+  });
 }
 
+// 1. setupCards jest wywoływane dla każdego elementu w columns czyli, każda kolumna może przechowywać informacje o kartach jakie w sobie ma
+// 2. Te info przechowuje w tablicy: Iteruj po tej tablicy i dla każdego elementu tablicy utwórz nową instancję Card (id i name z serwera)
+// 3. użyj metody addCard (zaimplementowanej w prototypie) by dodać karty do kolumny
+function setupCards(col, cards) {
+  cards.forEach(function (card) {
+    var cardObj = new Card(card.id, card.name);
+    col.addCard(cardObj);
+  });
+}
+
+//--------------------------------------------
 // generowanie templatów
 function generateTemplate(name, data, basicElement) {
   var template = document.getElementById(name).innerHTML;
@@ -17,21 +46,3 @@ function generateTemplate(name, data, basicElement) {
 
   return element;
 }
-
-// CREATING COLUMNS
-var todoColumn = new Column('To do');
-var doingColumn = new Column('Doing');
-var doneColumn = new Column('Done');
-
-// ADDING COLUMNS TO THE BOARD
-board.addColumn(todoColumn);
-board.addColumn(doingColumn);
-board.addColumn(doneColumn);
-
-// CREATING CARDS
-var card1 = new Card('New task');
-var card2 = new Card('Create kanban boards');
-
-// ADDING CARDS TO COLUMNS
-todoColumn.addCard(card1);
-doingColumn.addCard(card2);

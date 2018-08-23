@@ -1,31 +1,73 @@
-    // tworzenie klasy kolumny
-function Column(name) {
+
+function Column(id, name) {
   var self = this; // kontekst
 
-  this.id = randomString(); // generowanie id
-  this.name = name; // nazwa
+  this.id = id;
+  this.name = name || 'no name given';
   this.element = generateTemplate('column-template', {
     name: this.name,
     id: this.id
-  }); // do element generujemy element nazwa: column-template, dane do mustache
+  });
 
-  // dodaj funkcjonalość do klasy Column by każda stworzona instancja na kliknięcie elementu z klasą 'btn-delete' odpalała usówanie kolumny, a kliknięcie elementu z klasą addCard tworzyło nową instancję Card której nazwę pobierze z prompta.
+
   this.element.querySelector('.column').addEventListener('click', function (event) {
+
     if (event.target.classList.contains('btn-delete')) {
       self.removeColumn();
     }
+    // jeżeli funkcje wywołał element z klasą add-card
     if (event.target.classList.contains('add-card')) {
-      self.addCard(new Card(prompt("Enter the name of card")));
+    
+    // co cardName przechwyć to co w prompcie
+      var cardName = prompt('Enter the name of the card');
+    // zablokuj domyślną akcję
+      event.preventDefault();
+    // utwórz nowy obiekt Formularza danych (łatwo dodawane pary kluczy w json)
+    // name - nazwa karty
+    // bootcamp... - id kolumny w ktorej wywowalano funkcje
+      var data = new FormData();
+      data.append('name', cardName);
+      data.append('bootcamp_kanban_column_id', self.id);
+
+    // zapytanie do serwera:
+    // na endpoint card metoda post bo coś dodajemy
+    // otrzymujemy id karty wygenerowane przez serwer tam na serwerze się zapisuje to id i na ten podstawie z odpowiedzi resp możemy utworzyc nowa instancje karty i dodac do widoku metoda addCard
+
+
+      fetch(baseUrl + '/card', {
+          method: 'POST',
+          headers: myHeaders,
+          body: data
+        })
+        .then(function (resp) {
+          return resp.json();
+        })
+        .then(function (resp) {
+          var card = new Card(resp.id, cardName);
+          self.addCard(card);
+        });
     }
   });
 }
 
-    //prototypy addCard i removeColumn
 Column.prototype = {
   addCard: function (card) {
-    this.element.querySelector('ul').appendChild(card.element); // wybierz ul z this.element(naszej kolumny) i dodaj kartę by się wyświetlała na stronie. card.element bo element będzie naszym wygenerowanym szablonem
+    this.element.querySelector('ul').appendChild(card.element);
   },
+
+  // wyślij zapytanie deletem na adres url/column/id karty ktora usuwam
+  // weź element self przejdź do rodzica usun dziecko
   removeColumn: function () {
-    this.element.parentNode.removeChild(this.element); // przejdź do rodzica i usuń dziecko, które wywołało metodę
+    var self = this;
+    fetch(baseUrl + '/column/' + self.id, {
+        method: 'DELETE',
+        headers: myHeaders
+      })
+      .then(function(resp) {
+        return resp.json();
+      })
+      .then(function(resp) {
+        self.element.parentNode.removeChild(self.element);
+      })
   }
 }
